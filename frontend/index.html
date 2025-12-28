@@ -1,0 +1,252 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description"
+        content="Modern eKYC verification system with multi-step form, document upload, and automated verification">
+    <title>eKYC Verification Portal</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+
+<body>
+    <!-- Main Container -->
+    <div class="container">
+        <!-- Header -->
+        <header class="header">
+            <h1>eKYC Verification</h1>
+            <p>Complete your verification in 4 simple steps</p>
+        </header>
+
+        <!-- Progress Stepper -->
+        <div class="progress-stepper">
+            <div class="step active" data-step="1">
+                <div class="step-number">1</div>
+                <div class="step-label">Basic Details</div>
+            </div>
+            <div class="step" data-step="2">
+                <div class="step-number">2</div>
+                <div class="step-label">Personal Info</div>
+            </div>
+            <div class="step" data-step="3">
+                <div class="step-number">3</div>
+                <div class="step-label">Documents</div>
+            </div>
+            <div class="step" data-step="4">
+                <div class="step-number">4</div>
+                <div class="step-label">Verify</div>
+            </div>
+        </div>
+
+        <!-- Form Container -->
+        <div class="form-container">
+            <form id="kycForm">
+                <!-- Step 1: Basic Details -->
+                <div class="form-step active" data-step="1">
+                    <h2 class="step-title">Basic Details</h2>
+                    <p class="step-description">Let's start with your basic information</p>
+
+                    <div class="form-grid two-columns">
+                        <div class="form-group">
+                            <label for="firstName">First Name *</label>
+                            <input type="text" id="firstName" name="firstName" placeholder="Enter your first name"
+                                required>
+                            <span class="error-message">Please enter your first name</span>
+                        </div>
+                        <div class="form-group">
+                            <label for="lastName">Last Name *</label>
+                            <input type="text" id="lastName" name="lastName" placeholder="Enter your last name"
+                                required>
+                            <span class="error-message">Please enter your last name</span>
+                        </div>
+                    </div>
+
+                    <div class="form-grid">
+                        <div class="form-group">
+                            <label for="email">Email Address *</label>
+                            <input type="email" id="email" name="email" placeholder="your.email@example.com" required>
+                            <span class="error-message">Please enter a valid email address</span>
+                        </div>
+                        <div class="form-group">
+                            <label for="phone">Phone Number *</label>
+                            <input type="tel" id="phone" name="phone" placeholder="10-digit mobile number"
+                                pattern="[0-9]{10}" required>
+                            <span class="error-message">Please enter a valid 10-digit phone number</span>
+                        </div>
+                        <div class="form-group">
+                            <label for="dob">Date of Birth *</label>
+                            <input type="date" id="dob" name="dob" required>
+                            <span class="error-message">Please select your date of birth</span>
+                        </div>
+                    </div>
+
+                    <div class="form-buttons">
+                        <button type="button" class="btn btn-primary" onclick="nextStep()">Next Step</button>
+                    </div>
+                </div>
+
+                <!-- Step 2: Personal Details -->
+                <div class="form-step" data-step="2">
+                    <h2 class="step-title">Personal Details</h2>
+                    <p class="step-description">Provide your PAN, Aadhar, and bank information</p>
+
+                    <div class="form-grid">
+                        <div class="form-group">
+                            <label for="pan">PAN Card Number *</label>
+                            <input type="text" id="pan" name="pan" placeholder="ABCDE1234F"
+                                pattern="[A-Z]{5}[0-9]{4}[A-Z]{1}" maxlength="10" style="text-transform: uppercase;"
+                                required>
+                            <span class="error-message">Please enter a valid PAN (e.g., ABCDE1234F)</span>
+                        </div>
+                        <div class="form-group">
+                            <label for="aadhar">Aadhar Card Number *</label>
+                            <input type="text" id="aadhar" name="aadhar" placeholder="1234 5678 9012"
+                                pattern="[0-9]{12}" maxlength="12" required>
+                            <span class="error-message">Please enter a valid 12-digit Aadhar number</span>
+                        </div>
+                        <div class="form-group">
+                            <label for="accountNumber">Bank Account Number *</label>
+                            <input type="text" id="accountNumber" name="accountNumber"
+                                placeholder="Enter your account number" pattern="[0-9]{9,18}" required>
+                            <span class="error-message">Please enter a valid account number</span>
+                        </div>
+                        <div class="form-group">
+                            <label for="ifsc">IFSC Code *</label>
+                            <input type="text" id="ifsc" name="ifsc" placeholder="ABCD0123456"
+                                pattern="[A-Z]{4}0[A-Z0-9]{6}" maxlength="11" style="text-transform: uppercase;"
+                                required>
+                            <span class="error-message">Please enter a valid IFSC code</span>
+                        </div>
+                        <div class="form-group">
+                            <label for="bankName">Bank Name *</label>
+                            <input type="text" id="bankName" name="bankName" placeholder="Enter your bank name"
+                                required>
+                            <span class="error-message">Please enter your bank name</span>
+                        </div>
+                    </div>
+
+                    <div class="form-buttons">
+                        <button type="button" class="btn btn-secondary" onclick="prevStep()">Previous</button>
+                        <button type="button" class="btn btn-primary" onclick="nextStep()">Next Step</button>
+                    </div>
+                </div>
+
+                <!-- Step 3: Document Upload -->
+                <div class="form-step" data-step="3">
+                    <h2 class="step-title">Upload Documents</h2>
+                    <p class="step-description">Upload clear images of your PAN card, Aadhar card, and bank statement
+                    </p>
+
+                    <div class="form-grid">
+                        <!-- PAN Card Upload -->
+                        <div class="form-group">
+                            <label>PAN Card Image *</label>
+                            <div class="file-upload-wrapper">
+                                <input type="file" id="panFile" name="panFile" class="file-upload" accept="image/*,.pdf"
+                                    required onchange="handleFileUpload(this, 'panPreview')">
+                                <label for="panFile" class="file-upload-label">
+                                    <div class="file-upload-icon">📄</div>
+                                    <div class="file-upload-text">
+                                        Click to upload PAN card<br>
+                                        <small>Supports: JPG, PNG, PDF (Max 5MB)</small>
+                                    </div>
+                                </label>
+                                <div id="panPreview" class="file-preview">
+                                    <span class="file-preview-name"></span>
+                                    <button type="button" class="file-preview-remove"
+                                        onclick="removeFile('panFile', 'panPreview')">Remove</button>
+                                </div>
+                            </div>
+                            <!-- OCR Result Display -->
+                            <div id="panOcrResult" class="ocr-result"></div>
+                        </div>
+
+                        <!-- Aadhar Card Upload -->
+                        <div class="form-group">
+                            <label>Aadhar Card Image *</label>
+                            <div class="file-upload-wrapper">
+                                <input type="file" id="aadharFile" name="aadharFile" class="file-upload"
+                                    accept="image/*,.pdf" required onchange="handleFileUpload(this, 'aadharPreview')">
+                                <label for="aadharFile" class="file-upload-label">
+                                    <div class="file-upload-icon">📄</div>
+                                    <div class="file-upload-text">
+                                        Click to upload Aadhar card<br>
+                                        <small>Supports: JPG, PNG, PDF (Max 5MB)</small>
+                                    </div>
+                                </label>
+                                <div id="aadharPreview" class="file-preview">
+                                    <span class="file-preview-name"></span>
+                                    <button type="button" class="file-preview-remove"
+                                        onclick="removeFile('aadharFile', 'aadharPreview')">Remove</button>
+                                </div>
+                            </div>
+                            <!-- OCR Result Display -->
+                            <div id="aadhaarOcrResult" class="ocr-result"></div>
+                        </div>
+
+                        <!-- Voter ID Upload -->
+                        <div class="form-group">
+                            <label>Voter ID *</label>
+                            <div class="file-upload-wrapper">
+                                <input type="file" id="bankFile" name="bankFile" class="file-upload"
+                                    accept="image/*,.pdf" required onchange="handleFileUpload(this, 'bankPreview')">
+                                <label for="bankFile" class="file-upload-label">
+                                    <div class="file-upload-icon">📄</div>
+                                    <div class="file-upload-text">
+                                        Click to upload Voter ID<br>
+                                        <small>Supports: JPG, PNG, PDF (Max 5MB)</small>
+                                    </div>
+                                </label>
+                                <div id="bankPreview" class="file-preview">
+                                    <span class="file-preview-name"></span>
+                                    <button type="button" class="file-preview-remove"
+                                        onclick="removeFile('bankFile', 'bankPreview')">Remove</button>
+                                </div>
+                            </div>
+                            <!-- OCR Result Display -->
+                            <div id="voteridOcrResult" class="ocr-result"></div>
+                        </div>
+                    </div>
+
+                    <div class="form-buttons">
+                        <button type="button" class="btn btn-secondary" onclick="prevStep()">Previous</button>
+                        <button type="button" class="btn btn-primary" onclick="nextStep()">Next Step</button>
+                    </div>
+                </div>
+
+                <!-- Step 4: Verification -->
+                <div class="form-step" data-step="4">
+                    <h2 class="step-title">Review & Verify</h2>
+                    <p class="step-description">Please review your information before submitting</p>
+
+                    <div id="reviewData" class="form-grid">
+                        <!-- Review data will be populated here by JavaScript -->
+                    </div>
+
+                    <div class="form-buttons">
+                        <button type="button" class="btn btn-secondary" onclick="prevStep()">Previous</button>
+                        <button type="button" class="btn btn-primary" onclick="submitForm()">Submit & Verify</button>
+                    </div>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Modal Overlay -->
+    <div class="modal-overlay" id="modalOverlay">
+        <div class="modal" id="modal">
+            <div class="modal-icon" id="modalIcon">✓</div>
+            <h2 class="modal-title" id="modalTitle">Verification Successful!</h2>
+            <p class="modal-message" id="modalMessage">
+                Congratulations! Your KYC verification has been completed successfully.
+                You are now eligible to proceed with our services.
+            </p>
+            <button class="modal-close" onclick="closeModal()">Close</button>
+        </div>
+    </div>
+
+    <script src="script.js"></script>
+</body>
+
+</html>
