@@ -317,6 +317,59 @@ def _extract_from_bytes(file_bytes: bytes, filename: str, doc_type: str) -> Any:
     prompt_template = _build_prompt(doc_type)
     print(f"[DEBUG] File extension: {ext}, Prompt template length: {len(prompt_template)}")
 
+    def _mask_pii(data: Dict[str, Any]) -> Dict[str, Any]:
+        """Mask sensitive PII data like PAN and Bank Account numbers."""
+        if not isinstance(data, dict):
+            return data
+        
+        # Helper to mask string: keep last 4 chars
+        def mask_str(s: str, visible_chars: int = 4) -> str:
+            if not s: return s
+            val = str(s)
+            if len(val) <= visible_chars:
+                return "X" * len(val)
+            return "X" * (len(val) - visible_chars) + val[-visible_chars:]
+
+        # PAN Masking
+        if "pan_no" in data:
+            data["pan_no"] = mask_str(data["pan_no"], 4)
+
+        # Aadhaar Masking
+        if "aadhar_no" in data:
+            data["aadhar_no"] = mask_str(data["aadhar_no"], 4)
+            
+        # Voter ID Masking
+        if "voter_id" in data:
+            data["voter_id"] = mask_str(data["voter_id"], 4)
+
+        # Bank Account & IFSC Masking
+        # Bank Account
+        for key in ["account_number", "account_no", "bank_account_number", "acc_no", "bank_account"]:
+            if key in data:
+                data[key] = mask_str(data[key], 4)
+        
+        # IFSC
+        for key in ["ifsc", "ifsc_code", "bank_ifsc"]:
+            if key in data:
+                val = str(data[key])
+                # Mask middle part? e.g. HDFC0XXXXXX
+                if len(val) > 4:
+                     data[key] = val[:4] + "X" * (len(val) - 4)
+                else:
+                     data[key] = mask_str(val, 0) # Mask all if short
+        
+        return data
+
+    def _process_llm_json(json_str: str) -> Any:
+        # Parse, mask, return dict
+        try:
+            cleaned = _clean_gpt_json(json_str)
+            data = json.loads(cleaned)
+            return _mask_pii(data)
+        except Exception as e:
+            print(f"Error masking JSON: {e}")
+            return json_str
+
     if ext == "pdf":
         is_text_pdf = False
         extracted_text = ""
@@ -332,7 +385,8 @@ def _extract_from_bytes(file_bytes: bytes, filename: str, doc_type: str) -> Any:
                 {"type": "text", "text": prompt_template},
                 {"type": "text", "text": extracted_text},
             ]
-            return _switch_models(content_list)
+            raw_json = _switch_models(content_list)
+            return _process_llm_json(raw_json)
         else:
             pages = convert_from_bytes(file_bytes, dpi=300)
             results: List[Dict[str, Any]] = []
@@ -344,8 +398,11 @@ def _extract_from_bytes(file_bytes: bytes, filename: str, doc_type: str) -> Any:
                     {"type": "text", "text": prompt_template},
                     {"type": "image_url", "image_url": {"url": f"data:image/jpeg;base64,{image_base64}"}},
                 ]
-                result = _switch_models(content_list)
-                results.append({"page": i + 1, "json": result})
+                raw_json = _switch_models(content_list)
+                masked_data = _process_llm_json(raw_json)
+                # Convert back to string for consistency with existing list structure
+                masked_str = json.dumps(masked_data) if isinstance(masked_data, dict) else str(masked_data)
+                results.append({"page": i + 1, "json": masked_str})
             return results
 
     print(f"[DEBUG] Processing as image (not PDF)")
@@ -357,7 +414,7 @@ def _extract_from_bytes(file_bytes: bytes, filename: str, doc_type: str) -> Any:
     ]
     result = _switch_models(content_list)
     print(f"[DEBUG] _switch_models returned: {result[:200] if result else 'EMPTY'}...")
-    return result
+    return _process_llm_json(result)
 
 def _extract_from_url(file_url: str, doc_type: str) -> Any:
     resp = requests.get(file_url, timeout=30)
