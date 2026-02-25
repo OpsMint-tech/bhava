@@ -11,7 +11,7 @@ from pathlib import Path
 
 # Import local modules
 # We assume ocr_extractor is in app/services/ocr_extractor.py
-from app.services.ocr_extractor import _extract_from_bytes, _clean_gpt_json
+from app.services.ocr_extractor import _extract_from_bytes, _clean_gpt_json, mask_pii
 
 app = FastAPI(
     title="Neura API",
@@ -60,10 +60,12 @@ async def upload_pan(file: UploadFile = File(...)):
         # Extract data
         result = _extract_from_bytes(file_bytes, file.filename, "ind_pan")
         
-        # Parse JSON if it's a string
+        # Parse JSON if it's a string, then always apply masking
         if isinstance(result, str):
             cleaned = _clean_gpt_json(result)
-            data = json.loads(cleaned)
+            data = mask_pii(json.loads(cleaned))
+        elif isinstance(result, dict):
+            data = mask_pii(result)
         else:
             data = result
         
@@ -99,10 +101,12 @@ async def upload_aadhaar(file: UploadFile = File(...)):
         # Extract data
         result = _extract_from_bytes(file_bytes, file.filename, "ind_aadhaar")
         
-        # Parse JSON if it's a string
+        # Parse JSON if it's a string, then always apply masking
         if isinstance(result, str):
             cleaned = _clean_gpt_json(result)
-            data = json.loads(cleaned)
+            data = mask_pii(json.loads(cleaned))
+        elif isinstance(result, dict):
+            data = mask_pii(result)
         else:
             data = result
         
@@ -138,10 +142,12 @@ async def upload_voterid(file: UploadFile = File(...)):
         # Extract data
         result = _extract_from_bytes(file_bytes, file.filename, "ind_voterid")
         
-        # Parse JSON if it's a string
+        # Parse JSON if it's a string, then always apply masking
         if isinstance(result, str):
             cleaned = _clean_gpt_json(result)
-            data = json.loads(cleaned)
+            data = mask_pii(json.loads(cleaned))
+        elif isinstance(result, dict):
+            data = mask_pii(result)
         else:
             data = result
         
@@ -186,7 +192,7 @@ async def extract_ind_pan(payload: dict = Body(...)):
                 detected_type = "ind_pan"
                 result = _extract_from_bytes(file_bytes, filename, detected_type)
 
-            # Merge results - _extract_from_bytes returns a JSON string
+            # Merge results - _extract_from_bytes returns a dict/string/list
             if isinstance(result, str):
                 try:
                     cleaned = _clean_gpt_json(result)
@@ -199,8 +205,7 @@ async def extract_ind_pan(payload: dict = Body(...)):
             elif isinstance(result, dict):
                 merged_result.update(result)
             elif isinstance(result, list):
-                 # Handle list return if any
-                 for r in result:
+                for r in result:
                     if isinstance(r, dict):
                         merged_result.update(r)
                     elif isinstance(r, str):
@@ -215,7 +220,8 @@ async def extract_ind_pan(payload: dict = Body(...)):
         except Exception as e:
             merged_result["error"] = str(e)
 
-    return {"results": merged_result}
+    # Final masking pass to ensure PAN/IFSC are always masked
+    return {"results": mask_pii(merged_result)}
 
 
 @app.post("/api/v1/ocr/extract/ind_aadhaar")
@@ -248,7 +254,7 @@ async def extract_ind_aadhaar(payload: dict = Body(...)):
                 detected_type = "ind_aadhaar"
                 result = _extract_from_bytes(file_bytes, filename, detected_type)
 
-            # Merge results - _extract_from_bytes returns a JSON string
+            # Merge results - _extract_from_bytes returns a dict/string/list
             if isinstance(result, str):
                 try:
                     cleaned = _clean_gpt_json(result)
@@ -261,7 +267,7 @@ async def extract_ind_aadhaar(payload: dict = Body(...)):
             elif isinstance(result, dict):
                 merged_result.update(result)
             elif isinstance(result, list):
-                 for r in result:
+                for r in result:
                     if isinstance(r, dict):
                         merged_result.update(r)
                     elif isinstance(r, str):
@@ -276,7 +282,8 @@ async def extract_ind_aadhaar(payload: dict = Body(...)):
         except Exception as e:
             merged_result["error"] = str(e)
 
-    return {"results": merged_result}
+    # Final masking pass to ensure Aadhaar/account numbers are always masked
+    return {"results": mask_pii(merged_result)}
 
 
 @app.post("/api/v1/ocr/extract/voterid")
@@ -309,7 +316,7 @@ async def extract_voter_id(payload: dict = Body(...)):
                 detected_type = "ind_voterid"
                 result = _extract_from_bytes(file_bytes, filename, detected_type)
 
-            # Merge results - _extract_from_bytes returns a JSON string
+            # Merge results - _extract_from_bytes returns a dict/string/list
             if isinstance(result, str):
                 try:
                     cleaned = _clean_gpt_json(result)
@@ -322,7 +329,7 @@ async def extract_voter_id(payload: dict = Body(...)):
             elif isinstance(result, dict):
                 merged_result.update(result)
             elif isinstance(result, list):
-                 for r in result:
+                for r in result:
                     if isinstance(r, dict):
                         merged_result.update(r)
                     elif isinstance(r, str):
@@ -337,7 +344,8 @@ async def extract_voter_id(payload: dict = Body(...)):
         except Exception as e:
             merged_result["error"] = str(e)
 
-    return {"results": merged_result}
+    # Final masking pass to ensure voter_id is always masked
+    return {"results": mask_pii(merged_result)}
 
 if __name__ == "__main__":
     import uvicorn

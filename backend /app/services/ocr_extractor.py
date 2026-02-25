@@ -85,7 +85,6 @@ _COMPANY_PAN_PROMPT = (
     "- Return ONLY the JSON, no extra text.\n"
 )
 
-
 _VOTER_ID_PROMPT = (
     "Analyse the given Indian Voter ID card and extract the following details in strict JSON format:\n"
     "{\n"
@@ -109,6 +108,362 @@ _VOTER_ID_PROMPT = (
     "- DOB or YOB must be DD/MM/YYYY or YYYY.\n"
     "- Return ONLY the JSON, no extra text.\n"
 )
+
+_GST_PROMPT = (
+    "Analyse the given Indian GST Certificate and extract the following details in strict JSON format:\n"
+    "{\n"
+    "  \"gstin\": \"\",\n"
+    "  \"legal_name\": \"\",\n"
+    "  \"trade_name\": \"\",\n"
+    "  \"date_of_registration\": \"\",\n"
+    "  \"state\": \"\",\n"
+    "  \"address\": \"\",\n"
+    "  \"type\": \"ind_gst_certificate\"\n"
+    "}\n"
+    "Rules:\n"
+    "- GSTIN is 15 characters.\n"
+    "- Return ONLY the JSON, no extra text.\n"
+)
+
+_CHEQUE_PROMPT = (
+    "Analyse the given Indian Bank Cheque image and extract the following details in strict JSON format:\n"
+    "{\n"
+    "  \"account_holder_name\": \"\",\n"
+    "  \"bank_name\": \"\",\n"
+    "  \"account_number\": \"\",\n"
+    "  \"ifsc\": \"\",\n"
+    "  \"micr_code\": \"\",\n"
+    "  \"cheque_number\": \"\",\n"
+    "  \"branch\": \"\",\n"
+    "  \"type\": \"ind_cheque\"\n"
+    "}\n"
+    "Rules:\n"
+    "- IFSC format is 11 characters (4 letters, 0, 6 alphanumeric).\n"
+    "- Account number is numeric, typically 9-18 digits.\n"
+    "- Return ONLY the JSON, no extra text.\n"
+)
+
+_PENNYDROP_PROMPT = (
+    "Analyse the given bank account validation document or penny drop confirmation and extract the following details in strict JSON format:\n"
+    "{\n"
+    "  \"account_holder_name\": \"\",\n"
+    "  \"bank_name\": \"\",\n"
+    "  \"account_number\": \"\",\n"
+    "  \"ifsc\": \"\",\n"
+    "  \"branch\": \"\",\n"
+    "  \"account_type\": \"\",\n"
+    "  \"verification_status\": \"\",\n"
+    "  \"type\": \"validate_bank_account\"\n"
+    "}\n"
+    "Rules:\n"
+    "- IFSC format is 11 characters.\n"
+    "- Account number is numeric.\n"
+    "- Return ONLY the JSON, no extra text.\n"
+)
+
+_DRIVING_LICENSE_PROMPT = (
+    "Analyse the given Indian Driving License and extract the following details in strict JSON format:\n"
+    "{\n"
+    "  \"name\": \"\",\n"
+    "  \"date_of_birth\": \"\",\n"
+    "  \"dl_number\": \"\",\n"
+    "  \"issue_date\": \"\",\n"
+    "  \"valid_till\": \"\",\n"
+    "  \"address\": \"\",\n"
+    "  \"vehicle_class\": \"\",\n"
+    "  \"issuing_authority\": \"\",\n"
+    "  \"type\": \"ind_driving_license\"\n"
+    "}\n"
+    "Rules:\n"
+    "- DL number format varies by state.\n"
+    "- Dates must be DD/MM/YYYY.\n"
+    "- Return ONLY the JSON, no extra text.\n"
+)
+
+_UDYOG_AADHAAR_PROMPT = (
+    "Analyse the given Indian Udyog Aadhaar (MSME) certificate and extract the following details in strict JSON format:\n"
+    "{\n"
+    "  \"enterprise_name\": \"\",\n"
+    "  \"udyog_aadhaar_number\": \"\",\n"
+    "  \"owner_name\": \"\",\n"
+    "  \"category\": \"\",\n"
+    "  \"nic_code\": \"\",\n"
+    "  \"state\": \"\",\n"
+    "  \"district\": \"\",\n"
+    "  \"date_of_commencement\": \"\",\n"
+    "  \"type\": \"ind_udyog_aadhaar\"\n"
+    "}\n"
+    "Rules:\n"
+    "- Udyog Aadhaar number is 12 digits.\n"
+    "- Return ONLY the JSON, no extra text.\n"
+)
+
+_CLASSIFY_PROMPT = (
+    "Look at the given document image and classify it. Return ONLY a JSON object like:\n"
+    "{\"doc_type\": \"ind_pan\"}\n"
+    "Possible doc_type values: ind_pan, comp_pan, ind_aadhar, ind_voterid, ind_driving_license, ind_gst_certificate, ind_cheque, ind_udyog_aadhaar, ind_electricity_bill, water_bill, payslip, business_card, name_board, rental_agreement, property_tax, shop_license, financial_statement, form16, gst_return, itr, insurance_document, vehicle_rc, unknown.\n"
+    "Return ONLY the JSON, no extra text.\n"
+)
+
+_EB_BILL_PROMPT = (
+    "Analyse the given Indian Electricity Bill and extract the following details in strict JSON format:\n"
+    "{\n"
+    "  \"consumer_name\": \"\",\n"
+    "  \"consumer_number\": \"\",\n"
+    "  \"address\": \"\",\n"
+    "  \"bill_date\": \"\",\n"
+    "  \"due_date\": \"\",\n"
+    "  \"units_consumed\": \"\",\n"
+    "  \"amount_due\": \"\",\n"
+    "  \"service_provider\": \"\",\n"
+    "  \"type\": \"ind_electricity_bill\"\n"
+    "}\n"
+    "Return ONLY the JSON, no extra text.\n"
+)
+
+_WATER_BILL_PROMPT = (
+    "Analyse the given Water Bill and extract the following details in strict JSON format:\n"
+    "{\n"
+    "  \"consumer_name\": \"\",\n"
+    "  \"consumer_number\": \"\",\n"
+    "  \"address\": \"\",\n"
+    "  \"bill_date\": \"\",\n"
+    "  \"due_date\": \"\",\n"
+    "  \"amount_due\": \"\",\n"
+    "  \"service_provider\": \"\",\n"
+    "  \"type\": \"water_bill\"\n"
+    "}\n"
+    "Return ONLY the JSON, no extra text.\n"
+)
+
+_PAYS_LIP_PROMPT = (
+    "Analyse the given Payslip and extract the following details in strict JSON format:\n"
+    "{\n"
+    "  \"employee_name\": \"\",\n"
+    "  \"employee_id\": \"\",\n"
+    "  \"designation\": \"\",\n"
+    "  \"department\": \"\",\n"
+    "  \"pay_period\": \"\",\n"
+    "  \"gross_salary\": \"\",\n"
+    "  \"net_salary\": \"\",\n"
+    "  \"deductions\": \"\",\n"
+    "  \"employer_name\": \"\",\n"
+    "  \"type\": \"payslip\"\n"
+    "}\n"
+    "Return ONLY the JSON, no extra text.\n"
+)
+
+_BUSINESS_CARD_PROMPT = (
+    "Analyse the given Business Card and extract the following details in strict JSON format:\n"
+    "{\n"
+    "  \"name\": \"\",\n"
+    "  \"designation\": \"\",\n"
+    "  \"company_name\": \"\",\n"
+    "  \"phone\": \"\",\n"
+    "  \"email\": \"\",\n"
+    "  \"website\": \"\",\n"
+    "  \"address\": \"\",\n"
+    "  \"type\": \"business_card\"\n"
+    "}\n"
+    "Return ONLY the JSON, no extra text.\n"
+)
+
+_NAME_BOARD_PROMPT = (
+    "Analyse the given Name Board image and extract the following details in strict JSON format:\n"
+    "{\n"
+    "  \"business_name\": \"\",\n"
+    "  \"address\": \"\",\n"
+    "  \"phone\": \"\",\n"
+    "  \"type\": \"name_board\"\n"
+    "}\n"
+    "Return ONLY the JSON, no extra text.\n"
+)
+
+_RENTAL_AGREEMENT_PROMPT = (
+    "Analyse the given Rental Agreement document and extract the following details in strict JSON format:\n"
+    "{\n"
+    "  \"landlord_name\": \"\",\n"
+    "  \"tenant_name\": \"\",\n"
+    "  \"property_address\": \"\",\n"
+    "  \"monthly_rent\": \"\",\n"
+    "  \"lease_start_date\": \"\",\n"
+    "  \"lease_end_date\": \"\",\n"
+    "  \"deposit_amount\": \"\",\n"
+    "  \"type\": \"rental_agreement\"\n"
+    "}\n"
+    "Return ONLY the JSON, no extra text.\n"
+)
+
+_PROPERTY_TAX_PROMPT = (
+    "Analyse the given Property Tax document and extract the following details in strict JSON format:\n"
+    "{\n"
+    "  \"owner_name\": \"\",\n"
+    "  \"property_address\": \"\",\n"
+    "  \"assessment_number\": \"\",\n"
+    "  \"tax_amount\": \"\",\n"
+    "  \"year\": \"\",\n"
+    "  \"type\": \"property_tax\"\n"
+    "}\n"
+    "Return ONLY the JSON, no extra text.\n"
+)
+
+_SHOP_LICENSE_PROMPT = (
+    "Analyse the given Shop & Establishment License and extract the following details in strict JSON format:\n"
+    "{\n"
+    "  \"shop_name\": \"\",\n"
+    "  \"owner_name\": \"\",\n"
+    "  \"address\": \"\",\n"
+    "  \"license_number\": \"\",\n"
+    "  \"valid_from\": \"\",\n"
+    "  \"valid_to\": \"\",\n"
+    "  \"type\": \"shop_license\"\n"
+    "}\n"
+    "Return ONLY the JSON, no extra text.\n"
+)
+
+_FINANCIAL_STATEMENT_PROMPT = (
+    "Analyse the given Financial Statement and extract the following details in strict JSON format:\n"
+    "{\n"
+    "  \"entity_name\": \"\",\n"
+    "  \"period\": \"\",\n"
+    "  \"total_revenue\": \"\",\n"
+    "  \"total_expenses\": \"\",\n"
+    "  \"net_profit\": \"\",\n"
+    "  \"total_assets\": \"\",\n"
+    "  \"total_liabilities\": \"\",\n"
+    "  \"type\": \"financial_statement\"\n"
+    "}\n"
+    "Return ONLY the JSON, no extra text.\n"
+)
+
+_FORM16_PROMPT = (
+    "Analyse the given Form 16 (TDS certificate) and extract the following details in strict JSON format:\n"
+    "{\n"
+    "  \"employee_name\": \"\",\n"
+    "  \"employer_name\": \"\",\n"
+    "  \"pan\": \"\",\n"
+    "  \"assessment_year\": \"\",\n"
+    "  \"gross_salary\": \"\",\n"
+    "  \"total_tax_deducted\": \"\",\n"
+    "  \"type\": \"form16\"\n"
+    "}\n"
+    "Return ONLY the JSON, no extra text.\n"
+)
+
+_GST_RETURN_PROMPT = (
+    "Analyse the given GST Return document and extract the following details in strict JSON format:\n"
+    "{\n"
+    "  \"gstin\": \"\",\n"
+    "  \"legal_name\": \"\",\n"
+    "  \"return_type\": \"\",\n"
+    "  \"return_period\": \"\",\n"
+    "  \"total_taxable_value\": \"\",\n"
+    "  \"total_tax\": \"\",\n"
+    "  \"date_of_filing\": \"\",\n"
+    "  \"type\": \"gst_return\"\n"
+    "}\n"
+    "Return ONLY the JSON, no extra text.\n"
+)
+
+_ITR_PROMPT = (
+    "Analyse the given Indian Income Tax Return (ITR) document and extract the following details in strict JSON format:\n"
+    "{\n"
+    "  \"assessee_name\": \"\",\n"
+    "  \"pan\": \"\",\n"
+    "  \"assessment_year\": \"\",\n"
+    "  \"acknowledgement_number\": \"\",\n"
+    "  \"gross_total_income\": \"\",\n"
+    "  \"total_tax_payable\": \"\",\n"
+    "  \"refund\": \"\",\n"
+    "  \"type\": \"itr\"\n"
+    "}\n"
+    "Return ONLY the JSON, no extra text.\n"
+)
+
+_MULTI_DOCUMENT_PROMPT = (
+    "Analyse all the documents visible in the image and extract all data found in strict JSON format. "
+    "Return an array of document objects, each with a 'type' field identifying the document type. "
+    "Return ONLY the JSON array, no extra text.\n"
+)
+
+_INSURANCE_PROMPT = (
+    "Analyse the given Insurance document and extract the following details in strict JSON format:\n"
+    "{\n"
+    "  \"policy_number\": \"\",\n"
+    "  \"insured_name\": \"\",\n"
+    "  \"insurer_name\": \"\",\n"
+    "  \"policy_type\": \"\",\n"
+    "  \"start_date\": \"\",\n"
+    "  \"end_date\": \"\",\n"
+    "  \"sum_assured\": \"\",\n"
+    "  \"premium\": \"\",\n"
+    "  \"type\": \"insurance_document\"\n"
+    "}\n"
+    "Return ONLY the JSON, no extra text.\n"
+)
+
+_RC_PROMPT = (
+    "Analyse the given Indian Vehicle Registration Certificate (RC) and extract the following details in strict JSON format:\n"
+    "{\n"
+    "  \"owner_name\": \"\",\n"
+    "  \"registration_number\": \"\",\n"
+    "  \"chassis_number\": \"\",\n"
+    "  \"engine_number\": \"\",\n"
+    "  \"vehicle_class\": \"\",\n"
+    "  \"fuel_type\": \"\",\n"
+    "  \"registration_date\": \"\",\n"
+    "  \"valid_upto\": \"\",\n"
+    "  \"address\": \"\",\n"
+    "  \"type\": \"vehicle_rc\"\n"
+    "}\n"
+    "Return ONLY the JSON, no extra text.\n"
+)
+
+
+# ----------------------------
+# Module-level PII masking
+# ----------------------------
+def mask_pii(data: Dict[str, Any]) -> Dict[str, Any]:
+    """Mask sensitive PII fields (PAN, Aadhaar, Voter ID, Account, IFSC).
+    This is exported at module level so controllers can use it too."""
+    if not isinstance(data, dict):
+        return data
+
+    def _mask_str(s: str, visible_chars: int = 4) -> str:
+        if not s:
+            return s
+        val = str(s)
+        if len(val) <= visible_chars:
+            return "X" * len(val)
+        return "X" * (len(val) - visible_chars) + val[-visible_chars:]
+
+    # PAN masking – keep last 4 chars
+    if "pan_no" in data and data["pan_no"]:
+        data["pan_no"] = _mask_str(str(data["pan_no"]), 4)
+
+    # Aadhaar masking – keep last 4 chars
+    if "aadhar_no" in data and data["aadhar_no"]:
+        data["aadhar_no"] = _mask_str(str(data["aadhar_no"]).replace(" ", ""), 4)
+
+    # Voter ID masking
+    if "voter_id" in data and data["voter_id"]:
+        data["voter_id"] = _mask_str(str(data["voter_id"]), 4)
+
+    # Bank Account masking
+    for key in ["account_number", "account_no", "bank_account_number", "acc_no", "bank_account"]:
+        if key in data and data[key]:
+            data[key] = _mask_str(str(data[key]).replace(" ", ""), 4)
+
+    # IFSC masking – show first 4 chars (bank code), mask the rest
+    for key in ["ifsc", "ifsc_code", "bank_ifsc"]:
+        if key in data and data[key]:
+            val = str(data[key])
+            if len(val) > 4:
+                data[key] = val[:4] + "X" * (len(val) - 4)
+            else:
+                data[key] = "X" * len(val)
+
+    return data
 
 
 # ----------------------------
@@ -317,55 +672,12 @@ def _extract_from_bytes(file_bytes: bytes, filename: str, doc_type: str) -> Any:
     prompt_template = _build_prompt(doc_type)
     print(f"[DEBUG] File extension: {ext}, Prompt template length: {len(prompt_template)}")
 
-    def _mask_pii(data: Dict[str, Any]) -> Dict[str, Any]:
-        """Mask sensitive PII data like PAN and Bank Account numbers."""
-        if not isinstance(data, dict):
-            return data
-        
-        # Helper to mask string: keep last 4 chars
-        def mask_str(s: str, visible_chars: int = 4) -> str:
-            if not s: return s
-            val = str(s)
-            if len(val) <= visible_chars:
-                return "X" * len(val)
-            return "X" * (len(val) - visible_chars) + val[-visible_chars:]
-
-        # PAN Masking
-        if "pan_no" in data:
-            data["pan_no"] = mask_str(data["pan_no"], 4)
-
-        # Aadhaar Masking
-        if "aadhar_no" in data:
-            data["aadhar_no"] = mask_str(data["aadhar_no"], 4)
-            
-        # Voter ID Masking
-        if "voter_id" in data:
-            data["voter_id"] = mask_str(data["voter_id"], 4)
-
-        # Bank Account & IFSC Masking
-        # Bank Account
-        for key in ["account_number", "account_no", "bank_account_number", "acc_no", "bank_account"]:
-            if key in data:
-                data[key] = mask_str(data[key], 4)
-        
-        # IFSC
-        for key in ["ifsc", "ifsc_code", "bank_ifsc"]:
-            if key in data:
-                val = str(data[key])
-                # Mask middle part? e.g. HDFC0XXXXXX
-                if len(val) > 4:
-                     data[key] = val[:4] + "X" * (len(val) - 4)
-                else:
-                     data[key] = mask_str(val, 0) # Mask all if short
-        
-        return data
-
     def _process_llm_json(json_str: str) -> Any:
-        # Parse, mask, return dict
+        """Parse LLM JSON output, apply PII masking, and return dict."""
         try:
             cleaned = _clean_gpt_json(json_str)
             data = json.loads(cleaned)
-            return _mask_pii(data)
+            return mask_pii(data)
         except Exception as e:
             print(f"Error masking JSON: {e}")
             return json_str
@@ -458,17 +770,34 @@ def extract_documents(doc_type: str, documents: List[str]) -> List[Dict[str, Any
             if isinstance(raw, list):
                 merged: Dict[str, Any] = {}
                 for r in raw:
-                    cleaned = _clean_gpt_json(r.get("json", ""))
-                    try:
-                        data = json.loads(cleaned)
-                        merged.update({k: v for k, v in data.items() if v not in (None, "")})
-                    except Exception:
-                        pass
-                results.append(merged if merged else {"error": "unable_to_parse"})
+                    # r may be a dict (already masked) or a string
+                    if isinstance(r, dict):
+                        page_data = r.get("json", r)
+                        if isinstance(page_data, str):
+                            try:
+                                page_data = json.loads(_clean_gpt_json(page_data))
+                            except Exception:
+                                page_data = {}
+                        if isinstance(page_data, dict):
+                            merged.update({k: v for k, v in page_data.items() if v not in (None, "")})
+                    elif isinstance(r, str):
+                        try:
+                            page_data = json.loads(_clean_gpt_json(r))
+                            if isinstance(page_data, dict):
+                                merged.update({k: v for k, v in page_data.items() if v not in (None, "")})
+                        except Exception:
+                            pass
+                # Apply masking on the final merged dict
+                results.append(mask_pii(merged) if merged else {"error": "unable_to_parse"})
+            elif isinstance(raw, dict):
+                # Already processed by _process_llm_json, just append
+                results.append(raw)
             else:
+                # raw is a string (shouldn't happen often but handle gracefully)
                 cleaned = _clean_gpt_json(str(raw))
                 try:
-                    results.append(json.loads(cleaned))
+                    parsed = json.loads(cleaned)
+                    results.append(mask_pii(parsed) if isinstance(parsed, dict) else parsed)
                 except json.JSONDecodeError:
                     results.append({"raw": cleaned})
         except Exception as e:
