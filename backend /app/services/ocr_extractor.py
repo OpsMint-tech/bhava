@@ -437,9 +437,10 @@ def mask_pii(data: Dict[str, Any]) -> Dict[str, Any]:
             return "X" * len(val)
         return "X" * (len(val) - visible_chars) + val[-visible_chars:]
 
-    # PAN masking – keep last 4 chars
-    if "pan_no" in data and data["pan_no"]:
-        data["pan_no"] = _mask_str(str(data["pan_no"]), 4)
+    # PAN masking – keep last 4 chars (cover all common field names)
+    for pan_key in ["pan_no", "pan", "pan_number", "pan_card"]:
+        if pan_key in data and data[pan_key]:
+            data[pan_key] = _mask_str(str(data[pan_key]), 4)
 
     # Aadhaar masking – keep last 4 chars
     if "aadhar_no" in data and data["aadhar_no"]:
