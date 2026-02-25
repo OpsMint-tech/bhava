@@ -8,6 +8,7 @@ import requests
 import os
 import uuid
 from pathlib import Path
+from fastapi.staticfiles import StaticFiles
 
 # Import local modules
 # We assume ocr_extractor is in app/services/ocr_extractor.py
@@ -31,6 +32,11 @@ app.add_middleware(
 # Create uploads directory if it doesn't exist
 UPLOADS_DIR = Path("uploads")
 UPLOADS_DIR.mkdir(exist_ok=True)
+
+# Serve frontend UI
+FRONTEND_DIR = Path(__file__).resolve().parent.parent.parent / "frontend"
+if FRONTEND_DIR.exists():
+    app.mount("/ui", StaticFiles(directory=str(FRONTEND_DIR), html=True), name="frontend")
 
 @app.get("/")
 async def root():

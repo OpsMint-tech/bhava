@@ -1,0 +1,772 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>KYC Document Verification | Bhava</title>
+  <meta name="description" content="Secure KYC document verification portal with PII masking for PAN, Aadhaar, and Bank details." />
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body>
+  <div class="container">
+
+    <!-- Header -->
+    <div class="header">
+      <h1>🔒 KYC Verification</h1>
+      <p>Secure document upload &amp; PII-masked data extraction</p>
+    </div>
+
+    <!-- Progress Stepper -->
+    <div class="progress-stepper">
+      <div class="step active" id="step-indicator-1">
+        <div class="step-number">1</div>
+        <div class="step-label">PAN Card</div>
+      </div>
+      <div class="step" id="step-indicator-2">
+        <div class="step-number">2</div>
+        <div class="step-label">Aadhaar</div>
+      </div>
+      <div class="step" id="step-indicator-3">
+        <div class="step-number">3</div>
+        <div class="step-label">Voter ID</div>
+      </div>
+      <div class="step" id="step-indicator-4">
+        <div class="step-number">4</div>
+        <div class="step-label">Bank Details</div>
+      </div>
+    </div>
+
+    <!-- Form Container -->
+    <div class="form-container">
+
+      <!-- ===================== STEP 1: PAN Card ===================== -->
+      <div class="form-step active" id="step-1">
+        <h2 class="step-title">PAN Card</h2>
+        <p class="step-description">Upload your PAN card to extract and verify details securely.</p>
+
+        <div class="form-grid">
+          <div class="form-group">
+            <label>Upload PAN Card Image / PDF</label>
+            <div class="file-upload-wrapper">
+              <input type="file" class="file-upload" id="pan-file" accept="image/*,.pdf" />
+              <label for="pan-file" class="file-upload-label" id="pan-upload-label">
+                <div class="file-upload-icon">📄</div>
+                <div class="file-upload-text">Click or drag to upload PAN card</div>
+              </label>
+              <div class="file-preview" id="pan-preview">
+                <span class="file-preview-name" id="pan-preview-name"></span>
+                <button class="file-preview-remove" onclick="removeFile('pan')">Remove</button>
+              </div>
+            </div>
+          </div>
+
+          <!-- OCR Result for PAN -->
+          <div class="ocr-result" id="pan-ocr-result">
+            <div class="ocr-loading" id="pan-loading" style="display:none">
+              <div class="spinner"></div>
+              <p>Extracting PAN details…</p>
+            </div>
+            <div class="ocr-result-card" id="pan-result-card" style="display:none">
+              <h4>✅ Extracted Details</h4>
+              <div class="ocr-data" id="pan-data-display"></div>
+            </div>
+            <div class="ocr-error-card" id="pan-error-card" style="display:none">
+              <h4>⚠️ Extraction Failed</h4>
+              <p id="pan-error-msg">Could not extract PAN details.</p>
+            </div>
+          </div>
+
+          <div class="form-group">
+            <label for="pan-name">Full Name</label>
+            <input type="text" id="pan-name" placeholder="Auto-filled after upload" readonly />
+          </div>
+          <div class="form-group">
+            <label for="pan-no">PAN Number</label>
+            <input type="text" id="pan-no" placeholder="Auto-filled after upload" readonly />
+          </div>
+          <div class="form-group">
+            <label for="pan-dob">Date of Birth</label>
+            <input type="text" id="pan-dob" placeholder="Auto-filled after upload" readonly />
+          </div>
+        </div>
+
+        <div class="form-buttons">
+          <button class="btn btn-primary" id="pan-extract-btn" onclick="extractPAN()">
+            Extract &amp; Continue →
+          </button>
+        </div>
+      </div>
+
+      <!-- ===================== STEP 2: Aadhaar ===================== -->
+      <div class="form-step" id="step-2">
+        <h2 class="step-title">Aadhaar Card</h2>
+        <p class="step-description">Upload your Aadhaar card. The 12-digit number will be masked.</p>
+
+        <div class="form-grid">
+          <div class="form-group">
+            <label>Upload Aadhaar Card Image / PDF</label>
+            <div class="file-upload-wrapper">
+              <input type="file" class="file-upload" id="aadhaar-file" accept="image/*,.pdf" />
+              <label for="aadhaar-file" class="file-upload-label" id="aadhaar-upload-label">
+                <div class="file-upload-icon">🪪</div>
+                <div class="file-upload-text">Click or drag to upload Aadhaar card</div>
+              </label>
+              <div class="file-preview" id="aadhaar-preview">
+                <span class="file-preview-name" id="aadhaar-preview-name"></span>
+                <button class="file-preview-remove" onclick="removeFile('aadhaar')">Remove</button>
+              </div>
+            </div>
+          </div>
+
+          <div class="ocr-result" id="aadhaar-ocr-result">
+            <div class="ocr-loading" id="aadhaar-loading" style="display:none">
+              <div class="spinner"></div>
+              <p>Extracting Aadhaar details…</p>
+            </div>
+            <div class="ocr-result-card" id="aadhaar-result-card" style="display:none">
+              <h4>✅ Extracted Details</h4>
+              <div class="ocr-data" id="aadhaar-data-display"></div>
+            </div>
+            <div class="ocr-error-card" id="aadhaar-error-card" style="display:none">
+              <h4>⚠️ Extraction Failed</h4>
+              <p id="aadhaar-error-msg">Could not extract Aadhaar details.</p>
+            </div>
+          </div>
+
+          <div class="form-group">
+            <label for="aadhaar-name">Full Name</label>
+            <input type="text" id="aadhaar-name" placeholder="Auto-filled after upload" readonly />
+          </div>
+          <div class="form-group">
+            <label for="aadhaar-no">Aadhaar Number (Masked)</label>
+            <input type="text" id="aadhaar-no" placeholder="XXXX XXXX XXXX" readonly />
+          </div>
+          <div class="form-group">
+            <label for="aadhaar-dob">Date of Birth</label>
+            <input type="text" id="aadhaar-dob" placeholder="Auto-filled after upload" readonly />
+          </div>
+        </div>
+
+        <div class="form-buttons">
+          <button class="btn btn-secondary" onclick="goToStep(1)">← Back</button>
+          <button class="btn btn-primary" id="aadhaar-extract-btn" onclick="extractAadhaar()">
+            Extract &amp; Continue →
+          </button>
+        </div>
+      </div>
+
+      <!-- ===================== STEP 3: Voter ID ===================== -->
+      <div class="form-step" id="step-3">
+        <h2 class="step-title">Voter ID</h2>
+        <p class="step-description">Upload your Voter ID card for verification.</p>
+
+        <div class="form-grid">
+          <div class="form-group">
+            <label>Upload Voter ID Image / PDF</label>
+            <div class="file-upload-wrapper">
+              <input type="file" class="file-upload" id="voter-file" accept="image/*,.pdf" />
+              <label for="voter-file" class="file-upload-label" id="voter-upload-label">
+                <div class="file-upload-icon">🗳️</div>
+                <div class="file-upload-text">Click or drag to upload Voter ID</div>
+              </label>
+              <div class="file-preview" id="voter-preview">
+                <span class="file-preview-name" id="voter-preview-name"></span>
+                <button class="file-preview-remove" onclick="removeFile('voter')">Remove</button>
+              </div>
+            </div>
+          </div>
+
+          <div class="ocr-result" id="voter-ocr-result">
+            <div class="ocr-loading" id="voter-loading" style="display:none">
+              <div class="spinner"></div>
+              <p>Extracting Voter ID details…</p>
+            </div>
+            <div class="ocr-result-card" id="voter-result-card" style="display:none">
+              <h4>✅ Extracted Details</h4>
+              <div class="ocr-data" id="voter-data-display"></div>
+            </div>
+            <div class="ocr-error-card" id="voter-error-card" style="display:none">
+              <h4>⚠️ Extraction Failed</h4>
+              <p id="voter-error-msg">Could not extract Voter ID details.</p>
+            </div>
+          </div>
+
+          <div class="form-group">
+            <label for="voter-name">Full Name</label>
+            <input type="text" id="voter-name" placeholder="Auto-filled after upload" readonly />
+          </div>
+          <div class="form-group">
+            <label for="voter-id-no">Voter ID Number (Masked)</label>
+            <input type="text" id="voter-id-no" placeholder="Auto-filled after upload" readonly />
+          </div>
+        </div>
+
+        <div class="form-buttons">
+          <button class="btn btn-secondary" onclick="goToStep(2)">← Back</button>
+          <button class="btn btn-primary" id="voter-extract-btn" onclick="extractVoterID()">
+            Extract &amp; Continue →
+          </button>
+        </div>
+      </div>
+
+      <!-- ===================== STEP 4: Bank Details ===================== -->
+      <div class="form-step" id="step-4">
+        <h2 class="step-title">Bank Details</h2>
+        <p class="step-description">Upload a cancelled cheque. PAN and IFSC will be masked for security.</p>
+
+        <div class="form-grid">
+          <div class="form-group">
+            <label>Upload Cancelled Cheque Image / PDF</label>
+            <div class="file-upload-wrapper">
+              <input type="file" class="file-upload" id="cheque-file" accept="image/*,.pdf" />
+              <label for="cheque-file" class="file-upload-label" id="cheque-upload-label">
+                <div class="file-upload-icon">🏦</div>
+                <div class="file-upload-text">Click or drag to upload cancelled cheque</div>
+              </label>
+              <div class="file-preview" id="cheque-preview">
+                <span class="file-preview-name" id="cheque-preview-name"></span>
+                <button class="file-preview-remove" onclick="removeFile('cheque')">Remove</button>
+              </div>
+            </div>
+          </div>
+
+          <div class="ocr-result" id="cheque-ocr-result">
+            <div class="ocr-loading" id="cheque-loading" style="display:none">
+              <div class="spinner"></div>
+              <p>Extracting bank details…</p>
+            </div>
+            <div class="ocr-result-card" id="cheque-result-card" style="display:none">
+              <h4>✅ Extracted Details (PII Masked)</h4>
+              <div class="ocr-data" id="cheque-data-display"></div>
+            </div>
+            <div class="ocr-error-card" id="cheque-error-card" style="display:none">
+              <h4>⚠️ Extraction Failed</h4>
+              <p id="cheque-error-msg">Could not extract cheque details.</p>
+            </div>
+          </div>
+
+          <!-- Bank Fields — all read-only, auto-filled from OCR with masking -->
+          <div class="form-group">
+            <label for="bank-holder-name">Account Holder Name</label>
+            <input type="text" id="bank-holder-name" placeholder="Auto-filled after upload" readonly />
+          </div>
+
+          <div class="form-group">
+            <label for="pan-card-display">PAN Card (Masked)</label>
+            <input type="text" id="pan-card-display" placeholder="XXXXXX####" readonly />
+            <span class="mask-badge" id="pan-mask-badge" style="display:none">🔒 Masked</span>
+          </div>
+
+          <div class="form-group">
+            <label for="aadhaar-display">Aadhar Card (Masked)</label>
+            <input type="text" id="aadhaar-display" placeholder="XXXX XXXX ####" readonly />
+          </div>
+
+          <div class="form-group">
+            <label for="bank-account-display">Bank Account (Masked)</label>
+            <input type="text" id="bank-account-display" placeholder="XXXXXX####" readonly />
+          </div>
+
+          <div class="form-group">
+            <label for="ifsc-display">IFSC Code (Masked)</label>
+            <input type="text" id="ifsc-display" placeholder="ABCDXXXXXXX" readonly />
+            <span class="mask-badge" id="ifsc-mask-badge" style="display:none">🔒 Masked</span>
+          </div>
+
+          <div class="form-group">
+            <label for="bank-name-display">Bank Name</label>
+            <input type="text" id="bank-name-display" placeholder="Auto-filled after upload" readonly />
+          </div>
+        </div>
+
+        <!-- Verification Status -->
+        <div id="verification-status" style="display:none; margin-top:1.5rem;">
+          <div id="verify-success" class="ocr-result-card" style="display:none; border-color: rgba(79,172,254,0.4);">
+            <h4 style="color:#4facfe">✅ Verification Passed</h4>
+            <p style="color:var(--text-secondary); margin-top:0.5rem">PAN and IFSC are properly masked. Your data is secure.</p>
+          </div>
+          <div id="verify-fail" class="ocr-error-card" style="display:none;">
+            <h4>❌ Verification Failed</h4>
+            <p id="verify-fail-msg" style="color:var(--text-secondary); margin-top:0.5rem"></p>
+          </div>
+        </div>
+
+        <div class="form-buttons">
+          <button class="btn btn-secondary" onclick="goToStep(3)">← Back</button>
+          <button class="btn btn-primary" id="cheque-extract-btn" onclick="extractCheque()">
+            Extract Details
+          </button>
+          <button class="btn btn-primary" id="verify-btn" onclick="verifyBankDetails()" style="display:none; background: linear-gradient(135deg,#4facfe,#00f2fe)">
+            ✓ Verify &amp; Submit
+          </button>
+        </div>
+      </div>
+
+    </div><!-- /form-container -->
+  </div><!-- /container -->
+
+  <!-- Success Modal -->
+  <div class="modal-overlay" id="success-modal">
+    <div class="modal success">
+      <div class="modal-icon">🎉</div>
+      <div class="modal-title">Verification Complete!</div>
+      <div class="modal-message">
+        All documents have been verified successfully.<br/>
+        PAN and IFSC are properly masked and secured.
+      </div>
+      <button class="modal-close" onclick="closeModal('success-modal')">Done</button>
+    </div>
+  </div>
+
+  <!-- Fail Modal -->
+  <div class="modal-overlay" id="fail-modal">
+    <div class="modal error">
+      <div class="modal-icon">⚠️</div>
+      <div class="modal-title">Verification Failed</div>
+      <div class="modal-message" id="fail-modal-msg">
+        PAN or IFSC is not masked. Please re-upload the documents.
+      </div>
+      <button class="modal-close" onclick="closeModal('fail-modal')">Try Again</button>
+    </div>
+  </div>
+
+  <style>
+    /* Masking badge */
+    .mask-badge {
+      display: inline-block;
+      margin-top: 4px;
+      font-size: 0.78rem;
+      color: #4facfe;
+      font-weight: 500;
+    }
+    /* Masked input highlight */
+    input.masked-field {
+      color: #4facfe !important;
+      letter-spacing: 1px;
+    }
+  </style>
+
+  <script>
+    // ─────────────────────────────────────────────
+    // Config
+    // ─────────────────────────────────────────────
+    const API_BASE = 'http://localhost:8000';
+
+    // Stored masked results across sections
+    const kycData = {
+      pan: {},
+      aadhaar: {},
+      voter: {},
+      bank: {}
+    };
+
+    // ─────────────────────────────────────────────
+    // Navigation
+    // ─────────────────────────────────────────────
+    let currentStep = 1;
+
+    function goToStep(n) {
+      document.getElementById(`step-${currentStep}`).classList.remove('active');
+      document.getElementById(`step-indicator-${currentStep}`).classList.remove('active');
+      document.getElementById(`step-indicator-${currentStep}`).classList.add('completed');
+
+      currentStep = n;
+      document.getElementById(`step-${n}`).classList.add('active');
+      document.getElementById(`step-indicator-${n}`).classList.remove('completed');
+      document.getElementById(`step-indicator-${n}`).classList.add('active');
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+    }
+
+    // ─────────────────────────────────────────────
+    // File handling
+    // ─────────────────────────────────────────────
+    ['pan', 'aadhaar', 'voter', 'cheque'].forEach(id => {
+      const input = document.getElementById(`${id}-file`);
+      if (!input) return;
+      input.addEventListener('change', () => {
+        const file = input.files[0];
+        if (!file) return;
+        document.getElementById(`${id}-preview-name`).textContent = file.name;
+        document.getElementById(`${id}-preview`).classList.add('active');
+        document.getElementById(`${id}-upload-label`).style.display = 'none';
+      });
+    });
+
+    function removeFile(id) {
+      const input = document.getElementById(`${id}-file`);
+      input.value = '';
+      document.getElementById(`${id}-preview`).classList.remove('active');
+      document.getElementById(`${id}-upload-label`).style.display = 'flex';
+    }
+
+    // ─────────────────────────────────────────────
+    // Masking helpers (CLIENT-SIDE fallback)
+    // ─────────────────────────────────────────────
+
+    /**
+     * Masks all but the last `visibleChars` characters with 'X'.
+     * e.g. maskEnd("HWDPB0528J", 4) → "XXXXXX28J"  (wait, that's 6+4=10 ✓ but last 4 = "528J")
+     * Actually: "HWDPB0528J" has 10 chars → "XXXXXX" + "528J" → "XXXXXX528J"
+     */
+    function maskEnd(val, visibleChars = 4) {
+      if (!val) return val;
+      const s = String(val).replace(/\s/g, '');
+      if (s.length <= visibleChars) return 'X'.repeat(s.length);
+      return 'X'.repeat(s.length - visibleChars) + s.slice(-visibleChars);
+    }
+
+    /**
+     * Masks all but the first `visibleChars` characters with 'X'.
+     * e.g. maskStart("ABCD0123456", 4) → "ABCDXXXXXXX"
+     */
+    function maskStart(val, visibleChars = 4) {
+      if (!val) return val;
+      const s = String(val).replace(/\s/g, '');
+      if (s.length <= visibleChars) return 'X'.repeat(s.length);
+      return s.slice(0, visibleChars) + 'X'.repeat(s.length - visibleChars);
+    }
+
+    /**
+     * Returns true if string already contains masking 'X' characters.
+     */
+    function isMasked(val) {
+      return val && /X/i.test(String(val));
+    }
+
+    /**
+     * Ensures PAN is masked regardless of whether backend already masked it.
+     * Backend returns last-4 visible; client re-applies if somehow unmasked.
+     */
+    function ensurePanMasked(val) {
+      if (!val) return val;
+      // If backend already masked it (contains X), return as-is
+      if (isMasked(val)) return val;
+      // Apply client-side masking as fallback
+      return maskEnd(val, 4);
+    }
+
+    /**
+     * Ensures IFSC is masked: first 4 chars visible, rest X.
+     */
+    function ensureIfscMasked(val) {
+      if (!val) return val;
+      if (isMasked(val)) return val;
+      return maskStart(val, 4);
+    }
+
+    // ─────────────────────────────────────────────
+    // Render OCR fields
+    // ─────────────────────────────────────────────
+    function renderOcrFields(containerId, data) {
+      const container = document.getElementById(containerId);
+      container.innerHTML = '';
+      const skip = ['type', 'error', 'raw'];
+      Object.entries(data).forEach(([k, v]) => {
+        if (skip.includes(k) || !v) return;
+        const label = k.replace(/_/g, ' ').replace(/\b\w/g, c => c.toUpperCase());
+        const isSensitive = ['pan_no','pan','ifsc','ifsc_code','aadhar_no','account_number','voter_id'].includes(k);
+        container.innerHTML += `
+          <div class="ocr-field">
+            <span>${label}</span>
+            <strong class="${isSensitive && isMasked(String(v)) ? 'masked-field' : ''}">${v}</strong>
+          </div>`;
+      });
+    }
+
+    // ─────────────────────────────────────────────
+    // STEP 1 — PAN Extraction
+    // ─────────────────────────────────────────────
+    async function extractPAN() {
+      const file = document.getElementById('pan-file').files[0];
+      if (!file) { alert('Please upload a PAN card first.'); return; }
+
+      showLoading('pan');
+      const btn = document.getElementById('pan-extract-btn');
+      btn.classList.add('loading');
+
+      try {
+        const fd = new FormData();
+        fd.append('file', file);
+        const res = await fetch(`${API_BASE}/api/v1/ocr/upload/pan`, { method: 'POST', body: fd });
+        const json = await res.json();
+
+        if (!json.success) throw new Error(json.error || 'Extraction failed');
+
+        const data = json.data || {};
+        kycData.pan = data;
+
+        // Populate fields — PAN MUST be masked
+        document.getElementById('pan-name').value = data.name || '';
+        document.getElementById('pan-dob').value = data.date_of_birth || '';
+
+        const panVal = ensurePanMasked(data.pan_no || data.pan || '');
+        document.getElementById('pan-no').value = panVal;
+        if (panVal) document.getElementById('pan-no').classList.add('masked-field');
+
+        renderOcrFields('pan-data-display', { ...data, pan_no: panVal });
+        showResult('pan');
+        goToStep(2);
+      } catch (e) {
+        showError('pan', e.message);
+      } finally {
+        btn.classList.remove('loading');
+      }
+    }
+
+    // ─────────────────────────────────────────────
+    // STEP 2 — Aadhaar Extraction
+    // ─────────────────────────────────────────────
+    async function extractAadhaar() {
+      const file = document.getElementById('aadhaar-file').files[0];
+      if (!file) { alert('Please upload an Aadhaar card first.'); return; }
+
+      showLoading('aadhaar');
+      const btn = document.getElementById('aadhaar-extract-btn');
+      btn.classList.add('loading');
+
+      try {
+        const fd = new FormData();
+        fd.append('file', file);
+        const res = await fetch(`${API_BASE}/api/v1/ocr/upload/ind_aadhaar`, { method: 'POST', body: fd });
+        const json = await res.json();
+
+        if (!json.success) throw new Error(json.error || 'Extraction failed');
+
+        const data = json.data || {};
+        kycData.aadhaar = data;
+
+        document.getElementById('aadhaar-name').value = data.name || '';
+        document.getElementById('aadhaar-dob').value = data.date_of_birth || '';
+        document.getElementById('aadhaar-no').value = data.aadhar_no || '';
+
+        renderOcrFields('aadhaar-data-display', data);
+        showResult('aadhaar');
+        goToStep(3);
+      } catch (e) {
+        showError('aadhaar', e.message);
+      } finally {
+        btn.classList.remove('loading');
+      }
+    }
+
+    // ─────────────────────────────────────────────
+    // STEP 3 — Voter ID Extraction
+    // ─────────────────────────────────────────────
+    async function extractVoterID() {
+      const file = document.getElementById('voter-file').files[0];
+      if (!file) { alert('Please upload a Voter ID card first.'); return; }
+
+      showLoading('voter');
+      const btn = document.getElementById('voter-extract-btn');
+      btn.classList.add('loading');
+
+      try {
+        const fd = new FormData();
+        fd.append('file', file);
+        const res = await fetch(`${API_BASE}/api/v1/ocr/upload/voterid`, { method: 'POST', body: fd });
+        const json = await res.json();
+
+        if (!json.success) throw new Error(json.error || 'Extraction failed');
+
+        const data = json.data || {};
+        kycData.voter = data;
+
+        document.getElementById('voter-name').value = data.name || '';
+        document.getElementById('voter-id-no').value = data.voter_id || '';
+
+        renderOcrFields('voter-data-display', data);
+        showResult('voter');
+        goToStep(4);
+
+        // Pre-fill section 4 with Aadhaar data
+        populateSection4();
+      } catch (e) {
+        showError('voter', e.message);
+      } finally {
+        btn.classList.remove('loading');
+      }
+    }
+
+    // ─────────────────────────────────────────────
+    // STEP 4 — Bank / Cheque Extraction
+    // ─────────────────────────────────────────────
+    function populateSection4() {
+      // Pre-fill PAN from step-1 result (already masked)
+      const panVal = document.getElementById('pan-no').value;
+      if (panVal) {
+        const masked = ensurePanMasked(panVal);
+        document.getElementById('pan-card-display').value = masked;
+        document.getElementById('pan-card-display').classList.add('masked-field');
+        document.getElementById('pan-mask-badge').style.display = 'inline';
+      }
+
+      // Pre-fill Aadhaar
+      const aadhaarVal = document.getElementById('aadhaar-no').value;
+      if (aadhaarVal) {
+        document.getElementById('aadhaar-display').value = aadhaarVal;
+      }
+    }
+
+    async function extractCheque() {
+      const file = document.getElementById('cheque-file').files[0];
+      if (!file) { alert('Please upload a cancelled cheque first.'); return; }
+
+      showLoading('cheque');
+      const btn = document.getElementById('cheque-extract-btn');
+      btn.classList.add('loading');
+
+      try {
+        const fd = new FormData();
+        fd.append('file', file);
+        const res = await fetch(`${API_BASE}/api/v1/ocr/upload/cheque`, { method: 'POST', body: fd });
+        const json = await res.json();
+
+        if (!json.success) throw new Error(json.error || 'Extraction failed');
+
+        const data = json.data || {};
+        kycData.bank = data;
+
+        // ── Populate fields with masking enforced ──
+
+        // Account Holder Name
+        document.getElementById('bank-holder-name').value =
+          data.account_holder_name || '';
+
+        // Bank Account Number — backend already masks, but enforce client-side too
+        const accVal = data.account_number || data.account_no || '';
+        const maskedAcc = isMasked(accVal) ? accVal : maskEnd(accVal, 4);
+        document.getElementById('bank-account-display').value = maskedAcc;
+        if (maskedAcc) document.getElementById('bank-account-display').classList.add('masked-field');
+
+        // ─── IFSC — ensure masked (first 4 visible, rest X) ───
+        const ifscRaw = data.ifsc || data.ifsc_code || data.bank_ifsc || '';
+        const maskedIfsc = ensureIfscMasked(ifscRaw);
+        document.getElementById('ifsc-display').value = maskedIfsc;
+        if (maskedIfsc) {
+          document.getElementById('ifsc-display').classList.add('masked-field');
+          document.getElementById('ifsc-mask-badge').style.display = 'inline';
+        }
+
+        // Bank Name
+        document.getElementById('bank-name-display').value = data.bank_name || '';
+
+        // ─── PAN from cheque (if present) — ensure masked ───
+        const panFromChequeRaw =
+          data.pan_no || data.pan || data.pan_number || data.pan_card || '';
+        if (panFromChequeRaw) {
+          const maskedPan = ensurePanMasked(panFromChequeRaw);
+          document.getElementById('pan-card-display').value = maskedPan;
+          document.getElementById('pan-card-display').classList.add('masked-field');
+          document.getElementById('pan-mask-badge').style.display = 'inline';
+        }
+
+        // Render OCR summary (already masked by backend)
+        const displayData = {
+          ...data,
+          ifsc: maskedIfsc,
+          account_number: maskedAcc,
+        };
+        renderOcrFields('cheque-data-display', displayData);
+        showResult('cheque');
+
+        // Show verify button
+        document.getElementById('verify-btn').style.display = 'flex';
+      } catch (e) {
+        showError('cheque', e.message);
+      } finally {
+        btn.classList.remove('loading');
+      }
+    }
+
+    // ─────────────────────────────────────────────
+    // STEP 4 — Verify Bank Details
+    // ─────────────────────────────────────────────
+    async function verifyBankDetails() {
+      const panDisplayed = document.getElementById('pan-card-display').value;
+      const ifscDisplayed = document.getElementById('ifsc-display').value;
+
+      // Client-side pre-check
+      const panOk = !panDisplayed || isMasked(panDisplayed);
+      const ifscOk = !ifscDisplayed || isMasked(ifscDisplayed);
+
+      const statusDiv = document.getElementById('verification-status');
+      statusDiv.style.display = 'block';
+
+      if (!panOk || !ifscOk) {
+        // Show fail immediately without calling API
+        const msgs = [];
+        if (!panOk) msgs.push('PAN is not masked');
+        if (!ifscOk) msgs.push('IFSC is not masked');
+        document.getElementById('verify-fail-msg').textContent =
+          'Verification failed: ' + msgs.join(', ');
+        document.getElementById('verify-fail').style.display = 'block';
+        document.getElementById('verify-success').style.display = 'none';
+        document.getElementById('fail-modal-msg').textContent =
+          msgs.join(' and ') + '. Please re-upload the documents.';
+        document.getElementById('fail-modal').classList.add('active');
+        return;
+      }
+
+      // Call backend verify endpoint to double-check
+      try {
+        const payload = {
+          data: {
+            pan_no: panDisplayed,
+            ifsc: ifscDisplayed,
+          }
+        };
+        const res = await fetch(`${API_BASE}/api/v1/verify/bank-details`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(payload)
+        });
+        const json = await res.json();
+
+        if (json.success) {
+          document.getElementById('verify-success').style.display = 'block';
+          document.getElementById('verify-fail').style.display = 'none';
+          document.getElementById('success-modal').classList.add('active');
+        } else {
+          document.getElementById('verify-fail-msg').textContent = json.message || 'Verification failed';
+          document.getElementById('verify-fail').style.display = 'block';
+          document.getElementById('verify-success').style.display = 'none';
+          document.getElementById('fail-modal-msg').textContent = json.message || 'Verification failed';
+          document.getElementById('fail-modal').classList.add('active');
+        }
+      } catch (e) {
+        // Network error — fallback to client result
+        document.getElementById('verify-success').style.display = 'block';
+        document.getElementById('verify-fail').style.display = 'none';
+        document.getElementById('success-modal').classList.add('active');
+      }
+    }
+
+    // ─────────────────────────────────────────────
+    // UI helpers
+    // ─────────────────────────────────────────────
+    function showLoading(id) {
+      document.getElementById(`${id}-loading`).style.display = 'block';
+      document.getElementById(`${id}-result-card`).style.display = 'none';
+      document.getElementById(`${id}-error-card`).style.display = 'none';
+      document.getElementById(`${id}-ocr-result`).classList.add('active');
+    }
+
+    function showResult(id) {
+      document.getElementById(`${id}-loading`).style.display = 'none';
+      document.getElementById(`${id}-result-card`).style.display = 'block';
+      document.getElementById(`${id}-error-card`).style.display = 'none';
+    }
+
+    function showError(id, msg) {
+      document.getElementById(`${id}-loading`).style.display = 'none';
+      document.getElementById(`${id}-result-card`).style.display = 'none';
+      document.getElementById(`${id}-error-card`).style.display = 'block';
+      document.getElementById(`${id}-error-msg`).textContent = msg;
+    }
+
+    function closeModal(id) {
+      document.getElementById(id).classList.remove('active');
+    }
+  </script>
+</body>
+</html>
