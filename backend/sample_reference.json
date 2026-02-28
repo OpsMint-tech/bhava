@@ -1,0 +1,45 @@
+{
+  "invoice_metadata": {
+    "supply_type_code": "B2B",
+    "document_type": "Tax Invoice",
+    "document_date": "27-06-2023"
+  },
+  "supplier": {
+    "gstin": "18AADCF3803C125",
+    "name": "FINWIZZ SERVICES PVT LTD",
+    "address": "3RD FLOOR, B BLOCK, TRIBENI COMMERCIAL COMPLEX, BHARGAGARH, GUWAHATI, KAMRUP METROPOLITAN, ASSAM- 781005",
+    "email": "accounts@finwizz.net",
+    "phone": "9867452132"
+  },
+  "recipient": {
+    "gstin": "18AABCB1518L1ZR",
+    "name": "Bajaj_Finance_Limited",
+    "address": "VIP INTEGRA H No 409 1st Floor VIP Road Six Mile Above Reanult Showroom Guwahati, GUWAHATI 781022 ASSAM"
+  },
+  "items": [
+    {
+      "description": "Payout for the month of May 2023",
+      "hsn_code": "997159",
+      "quantity": "0",
+      "unit": "OTH",
+      "unit_price": "0",
+      "discount": "0.00",
+      "taxable_amount": "36250",
+      "tax_rate": "18.00",
+      "other_charges": "0",
+      "total": "42775"
+    }
+  ],
+  "totals": {
+    "taxable_amount": "36250.00",
+    "cgst_amount": "3263.00",
+    "sgst_amount": "3263.00",
+    "igst_amount": "0.00",
+    "cess_amount": "0.00",
+    "state_cess_amount": "0.00",
+    "discount": "0.00",
+    "other_charges": "0.00",
+    "round_off_amount": "0.00",
+    "total_invoice_amount": "42775.00"
+  }
+}
